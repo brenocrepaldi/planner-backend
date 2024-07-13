@@ -5,6 +5,7 @@ import nodemailer from 'nodemailer';
 import { z } from 'zod';
 import { getMailClient } from '../lib/mail';
 import { prisma } from '../lib/prisma';
+import { ClientError } from '../errors/client-error';
 
 export async function confirmTrip(app: FastifyInstance) {
 	app.withTypeProvider<ZodTypeProvider>().get(
@@ -30,7 +31,7 @@ export async function confirmTrip(app: FastifyInstance) {
 				},
 			});
 
-			if (!trip) throw Error('Trip not found.');
+			if (!trip) throw new ClientError('Trip not found.');
 
 			if (trip.is_confirmed) return res.redirect(`http://localhost:3000/trips/${tripId}`);
 
