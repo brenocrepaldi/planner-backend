@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { getMailClient } from '../lib/mail';
 import { prisma } from '../lib/prisma';
 import { ClientError } from '../errors/client-error';
+import { env } from '../env';
 
 export async function confirmTrip(app: FastifyInstance) {
 	app.withTypeProvider<ZodTypeProvider>().get(
@@ -33,7 +34,7 @@ export async function confirmTrip(app: FastifyInstance) {
 
 			if (!trip) throw new ClientError('Trip not found.');
 
-			if (trip.is_confirmed) return res.redirect(`http://localhost:3000/trips/${tripId}`);
+			if (trip.is_confirmed) return res.redirect(`${env.WEB_BASE_URL}/trips/${tripId}`);
 
 			await prisma.trip.update({
 				where: { id: tripId },
@@ -47,7 +48,7 @@ export async function confirmTrip(app: FastifyInstance) {
 
 			await Promise.all(
 				trip.participants.map(async (participant) => {
-					const confirmationLink = `http://localhost:3333/participants/${participant.id}/confirm`;
+					const confirmationLink = `${env.API_BASE_URL}/participants/${participant.id}/confirm`;
 					const message = await mail.sendMail({
 						from: {
 							name: 'Planner',
@@ -74,7 +75,7 @@ export async function confirmTrip(app: FastifyInstance) {
 				})
 			);
 
-			return res.redirect(`http://localhost:5173/trips/${tripId}`);
+			return res.redirect(`${env.WEB_BASE_URL}/trips/${tripId}`);
 		}
 	);
 }
