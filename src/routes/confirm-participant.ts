@@ -7,20 +7,20 @@ import { env } from '../env';
 
 export async function confirmParticipant(app: FastifyInstance) {
 	app.withTypeProvider<ZodTypeProvider>().get(
-		'/participants/:participantId/confirm',
+		'/participants/:participantEmail/confirm',
 		{
 			schema: {
 				params: z.object({
-					participantId: z.string().uuid(),
+					participantEmail: z.string().email(),
 				}),
 			},
 		},
 		async (req, res) => {
-			const { participantId } = req.params;
+			const { participantEmail } = req.params;
 
 			const participant = await prisma.participant.findUnique({
 				where: {
-					id: participantId,
+					email: participantEmail,
 				},
 			});
 
@@ -31,7 +31,7 @@ export async function confirmParticipant(app: FastifyInstance) {
 
 			await prisma.participant.update({
 				where: {
-					id: participantId,
+					email: participantEmail,
 				},
 				data: {
 					is_confirmed: true,

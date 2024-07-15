@@ -18,5 +18,5 @@ export const errorHandler: FastifyErrorHandler = (error, req, res) => {
 		});
 	}
 
-	return res.status(500).send({ message: 'Internal server errorr' });
+	return res.status(500).send({ message: 'Internal server error' });
 };
